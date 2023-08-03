@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    form{
+        background-color:orange;
+        text-align: center;
+    }
+    input{
+        font-size: 20px;
+        color:green;
+    }
+  </style>
+  <title>Simple Form</title>
+</head>
+<body>
+  <h3 style="text-align: center;">BOOK A CALL</h3>
+  <h6 style="text-align: center;">Book a call slot and our representative will call you within 1hr of selected time.</h6>
+  <form id="myForm">
+    <!-- Your form inputs here -->
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+    <br>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+    <br>
+    <label for="phone">Phone:</label>
+    <input type="tel" id="phone" name="phone" required>
+    <br>
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" required>
+    <br>
+    <label for="time">Time:</label>
+    <input type="time" id="time" name="time" required>
+    <br>
+    <button type="submit">Book a call</button>
+  </form>
+
+  <script>
+    document.getElementById('myForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent form submission (for demonstration purposes)
+
+      // Get the form data
+      const formData = new FormData(event.target);
+      const name = formData.get('name');
+      const email = formData.get('email');
+      const phone = formData.get('phone');
+      const date = formData.get('date');
+      const time = formData.get('time');
+
+      // Store the form data in the local storage
+      localStorage.setItem('name', name);
+      localStorage.setItem('email', email);
+      localStorage.setItem('phone', phone);
+      localStorage.setItem('date', date);
+      localStorage.setItem('time', time);
+
+      // Display the form data in an alert (for demonstration purposes)
+      const message = `
+        Name: ${name}
+        Email: ${email}
+        Phone: ${phone}
+        Date: ${date}
+        Time: ${time}
+      `;
+      alert(message);
+    });
+  </script>
+</body>
+</html>
