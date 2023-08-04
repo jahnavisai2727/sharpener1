@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    form{
+        background-color:orange;
+        text-align: center;
+    }
+    input{
+        font-size: 20px;
+        color:green;
+    }
+  </style>
+  <title>Simple Form</title>
+</head>
+<body>
+  <h3 style="text-align: center;">BOOK A CALL</h3>
+  <h6 style="text-align: center;">Book a call slot and our representative will call you within 1hr of selected time.</h6>
+  <form id="myForm">
+    <!-- Your form inputs here -->
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+    <br>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+    <br>
+    <label for="phone">Phone:</label>
+    <input type="tel" id="phone" name="phone" required>
+    <br>
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" required>
+    <br>
+    <label for="time">Time:</label>
+    <input type="time" id="time" name="time" required>
+    <br>
+    <button type="submit">Book a call</button>
+  </form>
+
+  <script>
+    // On page load, pre-fill the form fields if data is available in local storage
+    document.addEventListener('DOMContentLoaded', function() {
+      const name = localStorage.getItem('name');
+      const email = localStorage.getItem('email');
+      const phone = localStorage.getItem('phone');
+      const date = localStorage.getItem('date');
+      const time = localStorage.getItem('time');
+
+      if (name) document.getElementById('name').value = name;
+      if (email) document.getElementById('email').value = email;
+      if (phone) document.getElementById('phone').value = phone;
+      if (date) document.getElementById('date').value = date;
+      if (time) document.getElementById('time').value = time;
+    });
+
+    document.getElementById('myForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent form submission (for demonstration purposes)
+
+      // Get the form data
+      const formData = new FormData(event.target);
+      const name = formData.get('name');
+      const email = formData.get('email');
+      const phone = formData.get('phone');
+      const date = formData.get('date');
+      const time = formData.get('time');
+
+      // Store the form data in the local storage
+      localStorage.setItem('name', name);
+      localStorage.setItem('email', email);
+      localStorage.setItem('phone', phone);
+      localStorage.setItem('date', date);
+      localStorage.setItem('time', time);
+
+      // Display a success message to the user (optional)
+      alert("Your call has been booked successfully!");
+
+      // Clear the form fields after submission (optional)
+      event.target.reset();
+    });
+  </script>
+</body>
+</html>
