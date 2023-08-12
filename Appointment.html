@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    form {
+      background-color: orange;
+      text-align: center;
+    }
+    input {
+      font-size: 20px;
+      color: green;
+    }
+  </style>
+  <title>Simple Form</title>
+</head>
+<body>
+  <h3 style="text-align: center;">BOOK A CALL</h3>
+  <h6 style="text-align: center;">Book a call slot and our representative will call you within 1hr of the selected time.</h6>
+  <form onsubmit="saveToLocalStorage(event)">
+    <!-- Your form inputs here -->
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+    <br>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+    <br>
+    <label for="phone">Phone:</label>
+    <input type="tel" id="phone" name="phone" required>
+    <br>
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" required>
+    <br>
+    <label for="time">Time:</label>
+    <input type="time" id="time" name="time" required>
+    <br>
+    <button type="submit">Book a call</button>
+  </form>
+  <script src = "https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>  
+  <ul id="listOfItems"></ul>
+  <script>
+    function saveToLocalStorage(event) {
+      event.preventDefault();
+      const name = event.target.name.value;
+      const email = event.target.email.value;
+      const phone = event.target.phone.value;
+      const date = event.target.date.value;
+      const time = event.target.time.value;
+
+      const obj = {
+        name,
+        email,
+        phone,
+        date,
+        time
+      };
+
+      const storedData = JSON.parse(localStorage.getItem('userDetails')) || [];
+      storedData.push(obj);
+      axios.post("https://crudcrud.com/api/5603f30c7be44019bd2b0e80645583af/AppointmentData",obj)
+            .then((response)=>{
+              console.log(response)
+            })
+            .catch((err)=>{
+              console.log(err)
+            })
+      //localStorage.setItem('userDetails', JSON.stringify(storedData));
+
+      //showusersonscreen(obj);
+    }
+
+    function showusersonscreen(obj) {
+      const parentElem = document.getElementById("listOfItems");
+      const childItem = document.createElement("li");
+      childItem.textContent = obj.name + " - " + obj.email + " - " + obj.phone + " - " + obj.date + " - " + obj.time;
+
+      // Add Edit button
+      const editButton = document.createElement('button');
+      editButton.textContent = "Edit";
+      editButton.onclick = function() {
+        editEntry(obj, childItem);
+      };
+
+      // Add Delete button
+      const deleteButton = document.createElement('button');
+      deleteButton.textContent = "Delete";
+      deleteButton.onclick = function() {
+        const storedData = JSON.parse(localStorage.getItem('userDetails')) || [];
+        const index = storedData.findIndex(item =>
+          item.name === obj.name &&
+          item.email === obj.email &&
+          item.phone === obj.phone &&
+          item.date === obj.date &&
+          item.time === obj.time
+        );
+
+        if (index !== -1) {
+          storedData.splice(index, 1);
+          localStorage.setItem('userDetails', JSON.stringify(storedData));
+          parentElem.removeChild(childItem);
+        }
+      };
+
+      childItem.appendChild(editButton);
+      childItem.appendChild(deleteButton);
+      parentElem.appendChild(childItem);
+    }
+
+    function editEntry(obj, listItem) {
+      const newName = prompt('Edit Name:', obj.name);
+      const newEmail = prompt('Edit Email:', obj.email);
+      const newPhone = prompt('Edit Phone:', obj.phone);
+      const newDate = prompt('Edit Date:', obj.date);
+      const newTime = prompt('Edit Time:', obj.time);
+
+      if (newName && newEmail && newPhone && newDate && newTime) {
+        const storedData = JSON.parse(localStorage.getItem('userDetails')) || [];
+        const index = storedData.findIndex(item =>
+          item.name === obj.name &&
+          item.email === obj.email &&
+          item.phone === obj.phone &&
+          item.date === obj.date &&
+          item.time === obj.time
+        );
+
+        if (index !== -1) {
+          storedData[index] = {
+            name: newName,
+            email: newEmail,
+            phone: newPhone,
+            date: newDate,
+            time: newTime
+          };
+          localStorage.setItem('userDetails', JSON.stringify(storedData));
+          
+          // Update the displayed entry
+          const updatedEntry = `${newName} - ${newEmail} - ${newPhone} - ${newDate} - ${newTime}`;
+          listItem.textContent = updatedEntry;
+        }
+      }
+    }
+    
+    // Load stored data on page load
+    function loadStoredData() {
+      const storedData = JSON.parse(localStorage.getItem('userDetails')) || [];
+      storedData.forEach(item => showusersonscreen(item));
+    }
+    
+    loadStoredData();
+  </script>
+</body>
+</html>
+
