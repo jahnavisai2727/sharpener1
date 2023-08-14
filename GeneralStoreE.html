@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    form {
+      text-align: center;
+    }
+    input {
+      font-size: 20px;
+      color: green;
+    }
+  </style>
+  <title>SAI GENERAL STORES</title>
+</head>
+<body>
+  <h3 style="text-align: center;">Pick Your Choice</h3>
+  <form onsubmit="saveToLocalStorage(event)">
+    <label for="name"><b>Item Name:</b></label>
+    <input type="text" id="name" name="name" required>
+    <label for="Description"><b>Description:</b></label>
+    <input type="text" id="Description" name="Description" required>
+    <label for="price"><b>Price:</b></label>
+    <input type="number" id="price" name="price" required>
+    <label for="Quantity"><b>Quantity:</b></label>
+    <input type="number" id="Quantity" name="Quantity" required>
+    <button type="submit">Add Item</button>
+  </form>
+  
+  <ul id="listOfItems"></ul>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+  <script>
+    function saveToLocalStorage(event) {
+      event.preventDefault();
+      const name = event.target.name.value;
+      const Description = event.target.Description.value;
+      const price = event.target.price.value;
+      const Quantity = event.target.Quantity.value;
+
+      const obj = {
+        name,
+        Description,
+        price,
+        Quantity
+      };
+
+      axios.post("https://crudcrud.com/api/187b852c46f84a0388fef9bd481c4179/GeneralStore", obj)
+            .then((response) => {
+              console.log(response);
+              refreshItemsDisplay();
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+    }
+
+    function refreshItemsDisplay() {
+      const parentElem = document.getElementById("listOfItems");
+      parentElem.innerHTML = ""; // Clear the list
+
+      // Fetch and display items from the API
+      axios.get("https://crudcrud.com/api/187b852c46f84a0388fef9bd481c4179/GeneralStore")
+        .then((response) => {
+          const items = response.data;
+
+          items.forEach((obj) => {
+            showusersonscreen(obj, parentElem);
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    function showusersonscreen(obj, parentElem) {
+      const childItem = document.createElement("li");
+      const itemDetails = `${obj.name} - ${obj.Description} - $${obj.price}`;
+      const quantityDisplay = document.createElement("span");
+      quantityDisplay.textContent = `Qty: ${obj.Quantity}`;
+
+      const buyButton1 = createBuyButton(obj, 1);
+      const buyButton2 = createBuyButton(obj, 2);
+      const buyButton3 = createBuyButton(obj, 3);
+
+      childItem.textContent = itemDetails;
+      childItem.appendChild(quantityDisplay);
+      childItem.appendChild(buyButton1);
+      childItem.appendChild(buyButton2);
+      childItem.appendChild(buyButton3);
+
+      parentElem.appendChild(childItem);
+    }
+
+    function createBuyButton(item, quantityToBuy) {
+      const buyButton = document.createElement("button");
+      buyButton.textContent = `Buy ${quantityToBuy}`;
+      buyButton.addEventListener("click", () => {
+        handleBuyClick(item, quantityToBuy);
+      });
+      return buyButton;
+    }
+
+    function handleBuyClick(item, quantityToBuy) {
+      const newQuantity = parseInt(item.Quantity) - quantityToBuy;
+      if (newQuantity >= 0) {
+        item.Quantity = newQuantity;
+
+        axios.put(`https://crudcrud.com/api/187b852c46f84a0388fef9bd481c4179/GeneralStore/${item._id}`, { Quantity: newQuantity })
+          .then(() => {
+            refreshItemsDisplay();
+          })
+          .catch((err) => {
+            console.log(err);
+            alert("Failed to update quantity. Please try again.");
+          });
+      } else {
+        alert("Insufficient quantity.");
+      }
+    }
+
+    // Load items on page load
+    window.addEventListener("DOMContentLoaded", () => {
+      refreshItemsDisplay();
+    });
+  </script>
+</body>
+</html>
+
